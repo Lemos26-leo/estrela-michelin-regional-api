@@ -27,6 +27,42 @@ apontar para ele com as variáveis `DB_HOST`, `DB_USERNAME` e `DB_PASSWORD`.
 O CORS libera `http://localhost:5173` (o front). Para outro endereço, use a
 variável `FRONT_URL`.
 
+### Sem Ruby instalado
+
+Dá para rodar tudo por Docker, sem instalar Ruby na máquina. Crie a imagem
+uma vez:
+
+```bash
+docker build -t emr-api-dev - <<'DOCKERFILE'
+FROM ruby:3.3
+RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev postgresql-client \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+DOCKERFILE
+```
+
+Depois, de dentro da pasta do projeto (`docker compose up -d` já rodando):
+
+```bash
+# comando genérico: troque o que vem depois do -lc
+docker run --rm -it -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
+  --network estrela-michelin-regional-api_default -e DB_HOST=db \
+  emr-api-dev bash -lc "bundle install && bin/rails db:prepare && bin/rails db:seed"
+
+# servidor na porta 3000
+docker run --rm -it -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
+  --network estrela-michelin-regional-api_default -e DB_HOST=db -p 3000:3000 \
+  emr-api-dev bash -lc "bin/rails server -b 0.0.0.0"
+
+# testes
+docker run --rm -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
+  --network estrela-michelin-regional-api_default -e DB_HOST=db \
+  emr-api-dev bash -lc "bin/rails test"
+```
+
+O volume `emr-bundle` guarda as gems entre execuções, e `DB_HOST=db` aponta
+para o Postgres do `docker-compose.yml`.
+
 ## Testes
 
 ```bash

@@ -72,7 +72,7 @@ Mostre no `db/seeds.rb` os cinco restaurantes que nunca aparecem na lista:
 faixa de preço). Em seguida:
 
 ```bash
-docker compose exec api bin/rails runner "puts Restaurant.count; puts Restaurant.eligible.count"
+docker compose exec rails bin/rails runner "puts Restaurant.count; puts Restaurant.eligible.count"
 # 28
 # 23
 ```
@@ -83,7 +83,7 @@ O front manda o cabeçalho `X-Client-Id` em cada busca. Mostre o que ficou
 gravado:
 
 ```bash
-docker compose exec api bin/rails runner "pp SearchHistory.most_recent_first.limit(3).pluck(:client_id, :criteria)"
+docker compose exec rails bin/rails runner "pp SearchHistory.most_recent_first.limit(3).pluck(:client_id, :criteria)"
 ```
 
 E, sem o cabeçalho, nada é gravado:
@@ -103,7 +103,7 @@ curl -i "http://localhost:3000/api/v1/restaurants/search?city_id=999&price_range
 ## 7. Testes
 
 ```bash
-docker compose exec api bin/rails test
+docker compose exec rails bin/rails test
 # 41 runs, 109 assertions, 0 failures, 0 errors
 ```
 

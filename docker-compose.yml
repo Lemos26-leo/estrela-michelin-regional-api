@@ -16,9 +16,10 @@ services:
       timeout: 3s
       retries: 30
 
-  # A API em contêiner, para rodar sem instalar Ruby. Na primeira subida o
-  # db:prepare cria o banco, roda as migrations e carrega o seed.
-  api:
+  # Serviços levam o nome do processo: o projeto já se chama
+  # estrela-michelin-regional-api. Na primeira subida o db:prepare cria o
+  # banco, roda as migrations e carrega o seed.
+  rails:
     build:
       context: .
       dockerfile: Dockerfile.dev

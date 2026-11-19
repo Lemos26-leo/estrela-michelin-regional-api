@@ -20,7 +20,7 @@ docker compose up
 Na primeira vez ele monta a imagem, instala as gems, cria o banco, roda as
 migrations e carrega o seed (3 cidades, 22 tags, 28 restaurantes). Quando
 `http://localhost:3000/up` responder 200, a API está pronta. Use `-d` para
-soltar o terminal, `docker compose logs -f api` para ver os logs e
+soltar o terminal, `docker compose logs -f rails` para ver os logs e
 `docker compose down` para parar.
 
 Os arquivos ficam montados na imagem, então editar o código aqui recarrega
@@ -48,7 +48,7 @@ variável `FRONT_URL`.
 ## Testes
 
 ```bash
-docker compose run --rm api bin/rails test   # ou, com Ruby instalado:
+docker compose run --rm rails bin/rails test   # ou, com Ruby instalado:
 bin/rails test
 ```
 

@@ -10,62 +10,45 @@ documentação do projeto fica em `estrela-michelin-regional`.
 
 ## Rodar
 
-Pré-requisitos: Ruby 3.3 ou mais novo, Docker (para o banco) e Git.
+O único pré-requisito é Docker. O `docker compose` sobe o PostgreSQL e a
+API, sem instalar Ruby na máquina:
 
 ```bash
-bundle install
-docker compose up -d          # PostgreSQL 16 em localhost:5432
-bin/rails db:prepare          # cria o banco e roda as migrations
-bin/rails db:seed             # 3 cidades, 22 tags, 28 restaurantes
-bin/rails server              # http://localhost:3000/up responde 200
+docker compose up
 ```
 
-O `docker-compose.yml` sobe o Postgres com usuário e senha `estrela`.
-Quem já tiver um Postgres instalado pode pular o `docker compose` e
-apontar para ele com as variáveis `DB_HOST`, `DB_USERNAME` e `DB_PASSWORD`.
+Na primeira vez ele monta a imagem, instala as gems, cria o banco, roda as
+migrations e carrega o seed (3 cidades, 22 tags, 28 restaurantes). Quando
+`http://localhost:3000/up` responder 200, a API está pronta. Use `-d` para
+soltar o terminal, `docker compose logs -f api` para ver os logs e
+`docker compose down` para parar.
+
+Os arquivos ficam montados na imagem, então editar o código aqui recarrega
+a API — não precisa reconstruir nada.
+
+### Com Ruby instalado
+
+Quem tem Ruby 3.3 ou mais novo pode rodar a API direto e deixar no Docker
+só o banco:
+
+```bash
+docker compose up -d db
+bundle install
+bin/rails db:prepare    # cria o banco, roda as migrations e carrega o seed
+bin/rails server        # http://localhost:3000/up responde 200
+```
+
+O banco sobe com usuário e senha `estrela`. Quem já tiver um PostgreSQL
+instalado pode dispensar o Docker e apontar para ele com as variáveis
+`DB_HOST`, `DB_USERNAME` e `DB_PASSWORD`.
 
 O CORS libera `http://localhost:5173` (o front). Para outro endereço, use a
 variável `FRONT_URL`.
 
-### Sem Ruby instalado
-
-Dá para rodar tudo por Docker, sem instalar Ruby na máquina. Crie a imagem
-uma vez:
-
-```bash
-docker build -t emr-api-dev - <<'DOCKERFILE'
-FROM ruby:3.3
-RUN apt-get update -qq && apt-get install -y --no-install-recommends libpq-dev postgresql-client \
- && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-DOCKERFILE
-```
-
-Depois, de dentro da pasta do projeto (`docker compose up -d` já rodando):
-
-```bash
-# comando genérico: troque o que vem depois do -lc
-docker run --rm -it -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
-  --network estrela-michelin-regional-api_default -e DB_HOST=db \
-  emr-api-dev bash -lc "bundle install && bin/rails db:prepare && bin/rails db:seed"
-
-# servidor na porta 3000
-docker run --rm -it -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
-  --network estrela-michelin-regional-api_default -e DB_HOST=db -p 3000:3000 \
-  emr-api-dev bash -lc "bin/rails server -b 0.0.0.0"
-
-# testes
-docker run --rm -v "$PWD:/app" -v emr-bundle:/usr/local/bundle -w /app \
-  --network estrela-michelin-regional-api_default -e DB_HOST=db \
-  emr-api-dev bash -lc "bin/rails test"
-```
-
-O volume `emr-bundle` guarda as gems entre execuções, e `DB_HOST=db` aponta
-para o Postgres do `docker-compose.yml`.
-
 ## Testes
 
 ```bash
+docker compose run --rm api bin/rails test   # ou, com Ruby instalado:
 bin/rails test
 ```
 

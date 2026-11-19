@@ -1,3 +1,5 @@
+name: estrela-michelin-regional-api
+
 services:
   db:
     image: postgres:16
@@ -8,5 +10,35 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U estrela" ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  # A API em contêiner, para rodar sem instalar Ruby. Na primeira subida o
+  # db:prepare cria o banco, roda as migrations e carrega o seed.
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      DB_HOST: db
+      FRONT_URL: ${FRONT_URL:-http://localhost:5173}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      bash -c "bundle install
+      && rm -f tmp/pids/server.pid
+      && bin/rails db:prepare
+      && bin/rails server -b 0.0.0.0"
+
 volumes:
   pgdata:
+  bundle:

@@ -1,0 +1,9 @@
+# Imagem de desenvolvimento: só o que a API precisa para rodar e testar.
+# Quem tem Ruby 3.3 na máquina não precisa dela — veja o README.
+FROM ruby:3.3
+
+RUN apt-get update -qq \
+ && apt-get install -y --no-install-recommends libpq-dev postgresql-client \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app

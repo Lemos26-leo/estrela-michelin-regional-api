@@ -6,13 +6,11 @@ são os do `db/seeds.rb` recém-rodado.
 ## Antes de começar
 
 ```bash
-# no repositório da API
+# no repositório da API: sobe o PostgreSQL e a API na porta 3000
 docker compose up -d
-bin/rails db:prepare && bin/rails db:seed
-bin/rails server
 
-# no repositório do front, em outro terminal
-npm run dev
+# no repositório do front, em outro terminal: Vite na porta 5173
+docker compose up -d
 ```
 
 Abra `http://localhost:5173`. Deixe `http://localhost:3000/up` aberto numa
@@ -74,7 +72,7 @@ Mostre no `db/seeds.rb` os cinco restaurantes que nunca aparecem na lista:
 faixa de preço). Em seguida:
 
 ```bash
-bin/rails runner "puts Restaurant.count; puts Restaurant.eligible.count"
+docker compose exec api bin/rails runner "puts Restaurant.count; puts Restaurant.eligible.count"
 # 28
 # 23
 ```
@@ -85,7 +83,7 @@ O front manda o cabeçalho `X-Client-Id` em cada busca. Mostre o que ficou
 gravado:
 
 ```bash
-bin/rails runner "pp SearchHistory.most_recent_first.limit(3).pluck(:client_id, :criteria)"
+docker compose exec api bin/rails runner "pp SearchHistory.most_recent_first.limit(3).pluck(:client_id, :criteria)"
 ```
 
 E, sem o cabeçalho, nada é gravado:
@@ -105,7 +103,7 @@ curl -i "http://localhost:3000/api/v1/restaurants/search?city_id=999&price_range
 ## 7. Testes
 
 ```bash
-bin/rails test
+docker compose exec api bin/rails test
 # 41 runs, 109 assertions, 0 failures, 0 errors
 ```
 

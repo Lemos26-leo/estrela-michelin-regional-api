@@ -7,3 +7,9 @@ db/schema.rb linguist-generated
 vendor/* linguist-vendored
 config/credentials/*.yml.enc diff=rails_credentials
 config/credentials.yml.enc diff=rails_credentials
+
+# Os scripts de bin/ rodam em Linux (contêiner e CI): sempre LF, senão o
+# shebang quebra. O bit de execução deles está no índice do git, porque o
+# Windows não guarda permissão POSIX.
+bin/* text eol=lf
+*.sh text eol=lf

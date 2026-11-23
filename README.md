@@ -55,6 +55,14 @@ bin/rails test
 São 41 testes, um por regra da busca. Rodam contra o banco de teste, que o
 `db:prepare` já cria.
 
+O GitHub Actions (`.github/workflows/ci.yml`) roda em cada push e pull
+request os mesmos quatro passos: testes, `bin/rubocop`, `bin/brakeman` e
+`bin/bundler-audit`. Os dois últimos olham para fora do código, então podem
+ficar vermelhos sem ninguém ter mexido em nada — uma vulnerabilidade nova
+publicada numa gem, ou uma versão nova do brakeman (o `bin/brakeman` do
+Rails usa `--ensure-latest`). Nesses casos o conserto é
+`bundle update <gem>`.
+
 ## Endpoints
 
 ### `GET /api/v1/search_options`

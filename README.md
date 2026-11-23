@@ -1,9 +1,15 @@
 # Estrela Michelin Regional — API
 
 API Rails (modo `--api`) com PostgreSQL que atende o **UC-C04 Buscar
-restaurantes por contexto**. O front que consome esta API está em
-[`estrela-michelin-regional-web`](../estrela-michelin-regional-web); a
-documentação do projeto fica em `estrela-michelin-regional`.
+restaurantes por contexto**.
+
+Os três repositórios do projeto:
+
+| Repositório | Conteúdo |
+| --- | --- |
+| [estrela-michelin-regional](https://github.com/christiantakahashi/estrela-michelin-regional) | Documentos e diagramas |
+| **estrela-michelin-regional-api** (este) | API Rails + PostgreSQL |
+| [estrela-michelin-regional-web](https://github.com/Lemos26-leo/estrela-michelin-regional-web) | Front React + TypeScript |
 
 - Ruby 3.3 · Rails 8.1 · PostgreSQL 16
 - Porta local: `3000`
